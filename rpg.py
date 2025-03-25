@@ -3,7 +3,7 @@ from PyQt6.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QHBoxLayout, QTextBrowser, QPushButton,
     QSlider, QDialog, QLabel, QRadioButton, QButtonGroup, QMessageBox
 )
-from PyQt6.QtGui import QPixmap, QPalette, QBrush, QFont, QIcon
+from PyQt6.QtGui import QPixmap, QPalette, QBrush, QFont
 from PyQt6.QtCore import Qt, QTimer, QUrl
 from PyQt6.QtMultimedia import QMediaPlayer, QAudioOutput
 
@@ -19,16 +19,14 @@ class RPGGame(QWidget):
 
     def init_game(self):
         self.setWindowTitle("Apokalyptisches RPG")
-        self.setGeometry(200, 200, 900, 700)  # Etwas größeres Fenster
+        self.setGeometry(200, 200, 900, 700)
 
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)
 
         self.set_background(BACKGROUND_IMAGE)
-
         self.text_speed = 30
 
-        # Stylische Überschrift
         self.title_label = QLabel("Apokalyptisches Abenteuer")
         self.title_label.setFont(QFont("Old English Text MT", 24, QFont.Weight.Bold))
         self.title_label.setStyleSheet("""
@@ -41,7 +39,6 @@ class RPGGame(QWidget):
         self.title_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.layout.addWidget(self.title_label)
 
-        # Story Text mit verbessertem Design
         self.story_text = QTextBrowser(self)
         self.story_text.setFont(QFont("Palatino Linotype", 16, QFont.Weight.Normal))
         self.story_text.setStyleSheet("""
@@ -54,11 +51,9 @@ class RPGGame(QWidget):
         """)
         self.layout.addWidget(self.story_text)
 
-        # Top-Bar mit Einstellungen und Neustart
         top_bar = QHBoxLayout()
-        
-        # Neustart-Button
-        restart_btn = QPushButton("🔄 Neu starten")
+
+        restart_btn = QPushButton("\U0001F504 Neu starten")
         restart_btn.clicked.connect(self.restart_game)
         restart_btn.setStyleSheet("""
             QPushButton {
@@ -76,9 +71,8 @@ class RPGGame(QWidget):
         top_bar.addWidget(restart_btn)
 
         top_bar.addStretch()
-        
-        # Einstellungs-Button
-        settings_btn = QPushButton("⚙ Einstellungen")
+
+        settings_btn = QPushButton("\u2699 Einstellungen")
         settings_btn.clicked.connect(self.open_settings)
         settings_btn.setStyleSheet("""
             QPushButton {
@@ -96,15 +90,112 @@ class RPGGame(QWidget):
         top_bar.addWidget(settings_btn)
         self.layout.addLayout(top_bar)
 
-        # Audio Setup (wie vorher)
         self.setup_audio()
 
-        # Story-Buttons Container
         self.button_container = QVBoxLayout()
         self.layout.addLayout(self.button_container)
 
-        # Story laden und starten
         self.load_game_data()
+
+    def toggle_mute(self):
+        if self.audio_output.volume() > 0:
+            self.last_volume = self.audio_output.volume()
+            self.audio_output.setVolume(0)
+        else:
+            self.audio_output.setVolume(self.last_volume)
+
+    def open_settings(self):
+        dlg = QDialog(self)
+        dlg.setWindowTitle("\u2699 Einstellungen")
+        dlg.setFixedSize(360, 300)
+        dlg.setStyleSheet("""
+            QDialog {
+                background-color: rgba(255, 248, 230, 0.95);
+                border: 2px solid #8b5a2b;
+                border-radius: 15px;
+            }
+            QLabel {
+                font-family: 'Palatino Linotype';
+                font-size: 15px;
+                font-weight: bold;
+                color: #3D1C00;
+                padding-top: 8px;
+            }
+            QSlider::groove:horizontal {
+                border: 1px solid #bbb;
+                height: 8px;
+                background: #d2a679;
+                margin: 2px 0;
+            }
+            QSlider::handle:horizontal {
+                background: #5c3b1e;
+                border: 1px solid #3D1C00;
+                width: 14px;
+                margin: -4px 0;
+                border-radius: 7px;
+            }
+            QPushButton {
+                background-color: #c7a17a;
+                border: 2px solid #5c3b1e;
+                border-radius: 6px;
+                padding: 6px;
+                color: black;
+            }
+            QPushButton:hover {
+                background-color: #b18c6e;
+            }
+            QRadioButton {
+                font-family: 'Palatino Linotype';
+                font-size: 14px;
+                color: #3D1C00;
+            }
+        """)
+
+        layout = QVBoxLayout()
+
+        layout.addWidget(QLabel("\U0001F3B5 Musiklautstärke"))
+        volume_slider = QSlider(Qt.Orientation.Horizontal)
+        volume_slider.setRange(0, 100)
+        volume_slider.setValue(int(self.audio_output.volume() * 100))
+        volume_slider.valueChanged.connect(lambda val: self.audio_output.setVolume(val / 100))
+        layout.addWidget(volume_slider)
+
+        mute_btn = QPushButton("\U0001F507 Mute / Unmute")
+        mute_btn.clicked.connect(self.toggle_mute)
+        layout.addWidget(mute_btn)
+
+        layout.addWidget(QLabel("\u23F3 Textgeschwindigkeit"))
+        speed_group = QButtonGroup(dlg)
+        slow = QRadioButton("\U0001F422 Langsam")
+        normal = QRadioButton("\U0001F6B6 Normal")
+        fast = QRadioButton("\U0001F407 Schnell")
+        layout.addWidget(slow)
+        layout.addWidget(normal)
+        layout.addWidget(fast)
+
+        speed_group.addButton(slow)
+        speed_group.addButton(normal)
+        speed_group.addButton(fast)
+
+        if self.text_speed <= 10:
+            fast.setChecked(True)
+        elif self.text_speed >= 50:
+            slow.setChecked(True)
+        else:
+            normal.setChecked(True)
+
+        def update_speed():
+            if slow.isChecked():
+                self.text_speed = 60
+            elif normal.isChecked():
+                self.text_speed = 30
+            elif fast.isChecked():
+                self.text_speed = 10
+
+        speed_group.buttonClicked.connect(update_speed)
+
+        dlg.setLayout(layout)
+        dlg.exec()
 
     def load_game_data(self):
         self.story_data = self.load_story(STORY_FILE)
@@ -112,24 +203,37 @@ class RPGGame(QWidget):
         self.display_story()
 
     def restart_game(self):
-        # Zeige Bestätigungsdialog
-        reply = QMessageBox.question(
-            self, 
-            "Spiel neu starten", 
-            "Möchten Sie das Spiel wirklich neu starten?", 
-            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
-        )
-        
+        msg = QMessageBox(self)
+        msg.setWindowTitle("\U0001F504 Spiel neu starten?")
+        msg.setText("Willst du wirklich dein Abenteuer von vorne beginnen?")
+        msg.setIcon(QMessageBox.Icon.Question)
+        msg.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+        msg.setDefaultButton(QMessageBox.StandardButton.No)
+        msg.setStyleSheet("""
+            QMessageBox {
+                background-color: rgba(255, 248, 230, 0.95);
+                font-family: 'Palatino Linotype';
+                font-size: 14px;
+            }
+            QPushButton {
+                background-color: #a0522d;
+                border: 2px solid #5c3b1e;
+                border-radius: 6px;
+                padding: 6px 12px;
+                color: white;
+            }
+            QPushButton:hover {
+                background-color: #8b4513;
+            }
+        """)
+        reply = msg.exec()
+
         if reply == QMessageBox.StandardButton.Yes:
-            # Stoppe laufende Timers
             if hasattr(self, 'timer'):
                 self.timer.stop()
-            
-            # Setze Startzustand wieder her
             self.load_game_data()
 
     def setup_audio(self):
-        # Audio (Musik)
         self.audio_output = QAudioOutput()
         self.audio_output.setVolume(0.0)
         self.music_player = QMediaPlayer()
@@ -139,7 +243,6 @@ class RPGGame(QWidget):
         self.music_player.play()
         self.fade_in_volume(0, 0.5, 2000)
 
-        # Audio (Mausklick)
         self.click_output = QAudioOutput()
         self.click_player = QMediaPlayer()
         self.click_player.setAudioOutput(self.click_output)
@@ -176,11 +279,9 @@ class RPGGame(QWidget):
         full_text = section["text"]
         self.animate_text(full_text)
 
-        # Lösche alte Buttons
         for i in reversed(range(self.button_container.count())):
             self.button_container.itemAt(i).widget().deleteLater()
 
-        # Prüfe auf End- oder Tod-Abschnitte
         is_end_section = self.current_section.lower() in ['ende', 'tod']
 
         for choice_text, next_section in section["choices"]:
@@ -204,9 +305,8 @@ class RPGGame(QWidget):
             btn.clicked.connect(lambda _, s=next_section: self.handle_button_click(s))
             self.button_container.addWidget(btn)
 
-        # Wenn End- oder Tod-Abschnitt, füge Neustart-Button hinzu
         if is_end_section:
-            restart_btn = QPushButton("🔄 Spiel neu starten")
+            restart_btn = QPushButton("\U0001F504 Spiel neu starten")
             restart_btn.setStyleSheet("""
                 QPushButton {
                     background-color: #a0522d;
@@ -225,12 +325,9 @@ class RPGGame(QWidget):
             self.button_container.addWidget(restart_btn)
 
     def handle_button_click(self, next_section):
-        self.play_click_sound()
-        self.update_story(next_section)
-
-    def play_click_sound(self):
         self.click_player.stop()
         self.click_player.play()
+        self.update_story(next_section)
 
     def update_story(self, next_section):
         self.current_section = next_section
@@ -265,62 +362,6 @@ class RPGGame(QWidget):
 
         for i in range(1, steps + 1):
             QTimer.singleShot(i * interval, increase)
-
-    def open_settings(self):
-        # Settings Dialog bleibt unverändert
-        dlg = QDialog(self)
-        dlg.setWindowTitle("Einstellungen")
-        dlg.setFixedSize(300, 250)
-        layout = QVBoxLayout()
-
-        layout.addWidget(QLabel("🎵 Musiklautstärke"))
-        volume_slider = QSlider(Qt.Orientation.Horizontal)
-        volume_slider.setRange(0, 100)
-        volume_slider.setValue(int(self.audio_output.volume() * 100))
-        volume_slider.valueChanged.connect(lambda val: self.audio_output.setVolume(val / 100))
-        layout.addWidget(volume_slider)
-
-        mute_btn = QPushButton("🔇 Mute / Unmute")
-        def toggle_mute():
-            if self.audio_output.volume() > 0:
-                self.last_volume = self.audio_output.volume()
-                self.audio_output.setVolume(0)
-            else:
-                self.audio_output.setVolume(self.last_volume)
-        mute_btn.clicked.connect(toggle_mute)
-        layout.addWidget(mute_btn)
-
-        layout.addWidget(QLabel("⌛ Textgeschwindigkeit"))
-        speed_group = QButtonGroup(dlg)
-        slow = QRadioButton("🐢 Langsam")
-        normal = QRadioButton("🚶 Normal")
-        fast = QRadioButton("🐇 Schnell")
-        layout.addWidget(slow)
-        layout.addWidget(normal)
-        layout.addWidget(fast)
-
-        speed_group.addButton(slow)
-        speed_group.addButton(normal)
-        speed_group.addButton(fast)
-
-        if self.text_speed <= 10:
-            fast.setChecked(True)
-        elif self.text_speed >= 50:
-            slow.setChecked(True)
-        else:
-            normal.setChecked(True)
-
-        def update_speed():
-            if slow.isChecked():
-                self.text_speed = 60
-            elif normal.isChecked():
-                self.text_speed = 30
-            elif fast.isChecked():
-                self.text_speed = 10
-        speed_group.buttonClicked.connect(update_speed)
-
-        dlg.setLayout(layout)
-        dlg.exec()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
