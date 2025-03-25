@@ -1,47 +1,9 @@
 import sys
 from PyQt6.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QHBoxLayout, QTextBrowser, QPushButton,
-    QSlider, QDialog, QLabel, QRadioButton, QButtonGroup
+    QSlider, QDialog, QLabel, QRadioButton, QButtonGroup, QMessageBox
 )
-from PyQt6.QtGui import QPixmap, QPalette, QBrush, QFont
-from PyQt6.QtCore import Qt, QTimer, QUrl
-from PyQt6.QtMultimedia import QMediaPlayer, QAudioOutput
-
-STORY_FILE = "story.txt"
-MUSIC_FILE = "assets/Tanz der Ruinen.mp3"
-
-class RPGGame(QWidget):
-    def __init__(self):
-        super().__init__()
-
-        self.setWindowTitle("Apokalyptisches RPG")
-        self.setGeometry(200, 200, 800, 600)
-
-        self.layout = QVBoxLayout()
-        self.setLayout(self.layout)
-
-        self.set_background("assets/old_paper_bg.png")
-
-        # Textgeschwindigkeit in ms pro Zeichen (Standard: normal)
-        self.text_speed = 30
-
-        # Story Text
-        self.story_text = QTextBrowser(self)
-        self.story_text.setFont(QFont("Times New Roman", 16, QFont.Weight.Bold))
-        self.story_text.setStyleSheet("""
-            background: rgba(255, 255, 255, 0.5);
-            border: 2px solid #8b5a2b;
-            color: #3D1C00;
-            padding: 15px;
-            border-radius: 10px;
-        """)
-        self.layout.addWidget(self.story_text)
-import sys
-from PyQt6.QtWidgets import (
-    QApplication, QWidget, QVBoxLayout, QHBoxLayout, QTextBrowser, QPushButton,
-    QSlider, QDialog, QLabel, QRadioButton, QButtonGroup
-)
-from PyQt6.QtGui import QPixmap, QPalette, QBrush, QFont
+from PyQt6.QtGui import QPixmap, QPalette, QBrush, QFont, QIcon
 from PyQt6.QtCore import Qt, QTimer, QUrl
 from PyQt6.QtMultimedia import QMediaPlayer, QAudioOutput
 
@@ -53,9 +15,11 @@ BACKGROUND_IMAGE = "assets/paper_bg.png"
 class RPGGame(QWidget):
     def __init__(self):
         super().__init__()
+        self.init_game()
 
+    def init_game(self):
         self.setWindowTitle("Apokalyptisches RPG")
-        self.setGeometry(200, 200, 800, 600)
+        self.setGeometry(200, 200, 900, 700)  # Etwas größeres Fenster
 
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)
@@ -64,20 +28,56 @@ class RPGGame(QWidget):
 
         self.text_speed = 30
 
-        self.story_text = QTextBrowser(self)
-        self.story_text.setFont(QFont("Times New Roman", 16, QFont.Weight.Bold))
-        self.story_text.setStyleSheet("""
-            background: rgba(255, 255, 255, 0.5);
-            border: 2px solid #8b5a2b;
-            color: #3D1C00;
-            padding: 15px;
+        # Stylische Überschrift
+        self.title_label = QLabel("Apokalyptisches Abenteuer")
+        self.title_label.setFont(QFont("Old English Text MT", 24, QFont.Weight.Bold))
+        self.title_label.setStyleSheet("""
+            color: #5c3b1e;
+            background-color: rgba(255, 255, 255, 0.6);
             border-radius: 10px;
+            padding: 10px;
+            text-align: center;
+        """)
+        self.title_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.layout.addWidget(self.title_label)
+
+        # Story Text mit verbessertem Design
+        self.story_text = QTextBrowser(self)
+        self.story_text.setFont(QFont("Palatino Linotype", 16, QFont.Weight.Normal))
+        self.story_text.setStyleSheet("""
+            background: rgba(255, 255, 255, 0.7);
+            border: 3px solid #8b5a2b;
+            color: #3D1C00;
+            padding: 20px;
+            border-radius: 15px;
+            selection-background-color: #d2a679;
         """)
         self.layout.addWidget(self.story_text)
 
-        # Top-Bar mit Einstellungsbutton
+        # Top-Bar mit Einstellungen und Neustart
         top_bar = QHBoxLayout()
+        
+        # Neustart-Button
+        restart_btn = QPushButton("🔄 Neu starten")
+        restart_btn.clicked.connect(self.restart_game)
+        restart_btn.setStyleSheet("""
+            QPushButton {
+                background-color: #a0522d;
+                border: 2px solid #5c3b1e;
+                border-radius: 8px;
+                padding: 8px 12px;
+                color: white;
+                font-weight: bold;
+            }
+            QPushButton:hover {
+                background-color: #8b4513;
+            }
+        """)
+        top_bar.addWidget(restart_btn)
+
         top_bar.addStretch()
+        
+        # Einstellungs-Button
         settings_btn = QPushButton("⚙ Einstellungen")
         settings_btn.clicked.connect(self.open_settings)
         settings_btn.setStyleSheet("""
@@ -96,6 +96,39 @@ class RPGGame(QWidget):
         top_bar.addWidget(settings_btn)
         self.layout.addLayout(top_bar)
 
+        # Audio Setup (wie vorher)
+        self.setup_audio()
+
+        # Story-Buttons Container
+        self.button_container = QVBoxLayout()
+        self.layout.addLayout(self.button_container)
+
+        # Story laden und starten
+        self.load_game_data()
+
+    def load_game_data(self):
+        self.story_data = self.load_story(STORY_FILE)
+        self.current_section = "Start"
+        self.display_story()
+
+    def restart_game(self):
+        # Zeige Bestätigungsdialog
+        reply = QMessageBox.question(
+            self, 
+            "Spiel neu starten", 
+            "Möchten Sie das Spiel wirklich neu starten?", 
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
+        )
+        
+        if reply == QMessageBox.StandardButton.Yes:
+            # Stoppe laufende Timers
+            if hasattr(self, 'timer'):
+                self.timer.stop()
+            
+            # Setze Startzustand wieder her
+            self.load_game_data()
+
+    def setup_audio(self):
         # Audio (Musik)
         self.audio_output = QAudioOutput()
         self.audio_output.setVolume(0.0)
@@ -111,14 +144,6 @@ class RPGGame(QWidget):
         self.click_player = QMediaPlayer()
         self.click_player.setAudioOutput(self.click_output)
         self.click_player.setSource(QUrl.fromLocalFile(CLICK_SOUND_FILE))
-
-        # Story-Buttons
-        self.button_container = QVBoxLayout()
-        self.layout.addLayout(self.button_container)
-
-        self.story_data = self.load_story(STORY_FILE)
-        self.current_section = "Start"
-        self.display_story()
 
     def set_background(self, image_path):
         palette = QPalette()
@@ -151,8 +176,12 @@ class RPGGame(QWidget):
         full_text = section["text"]
         self.animate_text(full_text)
 
+        # Lösche alte Buttons
         for i in reversed(range(self.button_container.count())):
             self.button_container.itemAt(i).widget().deleteLater()
+
+        # Prüfe auf End- oder Tod-Abschnitte
+        is_end_section = self.current_section.lower() in ['ende', 'tod']
 
         for choice_text, next_section in section["choices"]:
             btn = QPushButton(choice_text)
@@ -174,6 +203,26 @@ class RPGGame(QWidget):
             """)
             btn.clicked.connect(lambda _, s=next_section: self.handle_button_click(s))
             self.button_container.addWidget(btn)
+
+        # Wenn End- oder Tod-Abschnitt, füge Neustart-Button hinzu
+        if is_end_section:
+            restart_btn = QPushButton("🔄 Spiel neu starten")
+            restart_btn.setStyleSheet("""
+                QPushButton {
+                    background-color: #a0522d;
+                    border: 3px solid #5c3b1e;
+                    color: white;
+                    padding: 15px;
+                    border-radius: 10px;
+                    margin-top: 10px;
+                    font-weight: bold;
+                }
+                QPushButton:hover {
+                    background-color: #8b4513;
+                }
+            """)
+            restart_btn.clicked.connect(self.restart_game)
+            self.button_container.addWidget(restart_btn)
 
     def handle_button_click(self, next_section):
         self.play_click_sound()
@@ -218,6 +267,7 @@ class RPGGame(QWidget):
             QTimer.singleShot(i * interval, increase)
 
     def open_settings(self):
+        # Settings Dialog bleibt unverändert
         dlg = QDialog(self)
         dlg.setWindowTitle("Einstellungen")
         dlg.setFixedSize(300, 250)
