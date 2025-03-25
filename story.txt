@@ -7,169 +7,86 @@ Draußen hallen Schreie durch die verlassene Stadt, während Zombies gegen die T
 2. Du öffnest dein Fenster und versuchst zu entkommen. -> Fenster  
 3. Du versteckst dich in einem Wandschrank. -> Verstecken  
 
-#Türe
-Als du die Tür öffnest, kommen dir drei ekelhafte, grünlich verweste Zombies entgegen.  
-Hinter ihnen liegt die Straße – dein möglicher Ausweg.  
+#Türe  
+Du reißt die Tür auf und stürmst hinaus. Die Zombies bemerken dich sofort und greifen an.  
 
-1. Du schnappst dir ein Metallrohr und kämpfst. -> Kampf  
-2. Du versuchst, die Zombies zu umgehen und rennst an ihnen vorbei. -> Rennen  
+1. Du kämpfst mit bloßen Händen. -> Kampf  
+2. Du versuchst, sie abzulenken und wegzurennen. -> Flucht  
 
-#Kampf
-Du schlägst mit voller Wucht auf den ersten Zombie ein. Er taumelt zurück, aber fällt nicht.  
-Ein zweiter packt dich von der Seite!  
+#Kampf  
+Ohne Waffen bist du den Zombies unterlegen. Sie überwältigen dich schnell.  
+**GAME OVER**  
 
-1. Dich losreißen und weiterkämpfen. -> Brutalität  
-2. Losreißen und fliehen. -> Rückzug  
+#Flucht  
+Du wirfst einen Gegenstand in die Ferne, um die Zombies abzulenken, und rennst in eine nahe Gasse.  
 
-#Brutalität
-Du kämpfst weiter, schlägst, trittst, schreist – doch dann: ein stechender Schmerz.  
-Die Zähne eines Zombies bohren sich in deine Schulter...  
+1. Du suchst nach einem Fahrzeug. -> Auto  
+2. Du läufst in Richtung der U-Bahn-Schächte. -> U-Bahn  
 
-1. Weitermachen, bis zum bitteren Ende. -> Infektion  
-2. Losreißen und um dein Leben rennen. -> Verletzung  
+#Fenster  
+Du kletterst aus dem Fenster und landest auf dem feuchten Asphalt der dunklen Straße. Zombies torkeln in der Ferne.  
 
-#Infektion
-Dein Körper wird kalt.  
-Deine Gedanken verschwimmen.  
-Hunger. Unersättlicher Hunger...  
+1. Du rennst durch die Straßen in Richtung des Stadtzentrums. -> Zentrum  
+2. Du suchst Schutz in einem nahegelegenen Haus. -> Haus  
 
-💀 **Du bist jetzt ein Zombie.** 💀  
+#Verstecken  
+Du kriechst in den Wandschrank und hältst den Atem an. Die Zombies brechen die Tür auf und durchsuchen das Haus.  
+
+1. Du wartest still, bis sie verschwinden. -> Warten  
+2. Du nutzt einen Moment der Ablenkung und fliehst aus dem Fenster. -> Flucht  
+
+#Auto  
+Du findest ein altes Auto mit Schlüsseln im Zündschloss. Der Motor springt an, und du rast durch die verwüsteten Straßen.  
+
+1. Du fährst in Richtung Stadtrand. -> Stadtrand  
+2. Du suchst eine Tankstelle, um Vorräte zu sichern. -> Tankstelle  
+
+#U-Bahn  
+Die Tunnel sind dunkel und unheimlich, aber hier gibt es weniger Zombies. Du findest eine Karte mit einem eingezeichneten Bunker.  
+
+1. Du folgst der Karte. -> Bunker  
+2. Du versuchst, einen anderen Ausgang zu finden. -> Ausgang  
+
+#Zentrum  
+Die Innenstadt ist überrannt. Zombies überall. Du wirst eingekreist.  
+**GAME OVER**  
+
+#Haus  
+Das Haus scheint leer, aber du findest Vorräte und eine Waffe.  
+
+1. Du bleibst hier, bis es sicherer wird. -> Bleiben  
+2. Du ziehst weiter. -> Weiterziehen  
+
+#Bunker  
+Nach einer langen Reise erreichst du den Bunker. Die Tür öffnet sich, und du wirst von Überlebenden begrüßt. Du hast es geschafft!  
 **ENDE**  
 
-#Verletzung
-Du kannst dich losreißen, aber dein Arm blutet stark.  
-Du hast keine Zeit zu überlegen – du musst weiter.  
+#Ausgang  
+Du folgst einem langen dunklen Tunnel und findest einen alten Notausgang. Doch als du die Tür öffnest, warten Zombies auf dich.  
+**GAME OVER**  
 
-1. Unterschlupf suchen. -> Versteck  
-2. In ein Gebäude fliehen. -> Wohnung  
+#Bleiben  
+Du verbarrikadierst die Türen und richtest dich ein.  
+Doch nach einigen Tagen gehen dir die Vorräte aus, und du bist gezwungen, weiterzuziehen.  
 
-#Rennen
-Du rennst mit aller Kraft an den Zombies vorbei auf die Straße.  
-Die Stadt liegt verlassen vor dir, doch Schreie hallen durch die Dunkelheit.  
+1. Du ziehst weiter. -> Weiterziehen  
 
-1. In eine Tankstelle flüchten. -> Tankstelle  
-2. In ein Auto springen. -> Auto  
+#Weiterziehen  
+Mit deiner Waffe und den wenigen Vorräten machst du dich auf den Weg in Richtung eines vermuteten Bunkers.  
+Unterwegs triffst du andere Überlebende, die dir helfen.  
 
-#Fenster
-Du öffnest das Fenster vorsichtig.  
-Unten ist der Hinterhof – du hast zwei Möglichkeiten:  
+1. Du folgst ihnen zum Bunker. -> Bunker  
 
-1. Du springst in den Container. -> Container  
-2. Du kletterst die Regenrinne runter. -> Regenrinne  
+#Tankstelle  
+Die Tankstelle ist halb geplündert, aber du findest noch nützliche Vorräte. Plötzlich nähern sich Zombies.  
 
-#Container
-Du landest im Müll. Ein schrecklicher Gestank steigt dir in die Nase.  
-Dann hörst du ein Knurren – zwei rot glühende Augen fixieren dich aus der Dunkelheit.  
+1. Du fliehst sofort. -> Flucht  
+2. Du versuchst, dich zu verteidigen. -> Kampf  
 
-1. Schnell rausklettern! -> Fluchtcontainer  
-2. Stillhalten und hoffen, dass es dich nicht angreift. -> Angriff  
-
-#Fluchtcontainer
-Du kletterst panisch heraus.  
-Draußen ist es ruhig. Zu ruhig.  
-Eine dunkle Gasse führt in die Stadt.  
-
-1. Weiterlaufen. -> Straße  
-
-#Angriff
-Ein entstellter Hund springt dich an.  
-Seine Zähne reißen dir das Fleisch von den Knochen.  
-
-💀 **DU BIST TOT.** 💀  
+#Stadtrand  
+Hier gibt es weniger Zombies, aber du bist der Natur ausgesetzt. Nach langer Suche findest du den Eingang zu einem Bunker.  
 **ENDE**  
 
-#Regenrinne
-Du kletterst vorsichtig die rostige Regenrinne hinab.  
-Doch dann gibt es ein metallisches Knirschen – sie bricht!  
-
-1. Abspringen! -> Verletzung  
-2. Festhalten und den Sturz kontrollieren. -> Sicheres Landen  
-
-#Sicheres Landen
-Du rollst dich ab und stehst auf.  
-Ein leises Wimmern kommt aus einer dunklen Gasse.  
-Ein Kind? Oder etwas anderes?  
-
-1. Nachsehen. -> Mädchen  
-2. Weiterlaufen. -> Straße  
-
-#Mädchen
-Du findest ein kleines Mädchen mit einem blutverschmierten Teddybären.  
-Ihre Augen sind leer, ihre Haut grau.  
-
-1. Sie ansprechen. -> Wahrheit  
-2. Schnell verschwinden. -> Fluchtkind  
-
-#Wahrheit
-„H...h...hunger...“ flüstert sie.  
-Bevor du reagieren kannst, stürzt sie sich auf dich.  
-Schmerzen explodieren in deinem Körper.  
-
-💀 **DU BIST TOT.** 💀  
-**ENDE**  
-
-#Fluchtkind
-Du rennst weg, ohne dich umzudrehen.  
-Vielleicht war es richtig – vielleicht auch nicht.  
-
-1. Weiter in Richtung Hauptstraße. -> Straße  
-2. Ein Gebäude in der Nähe durchsuchen. -> Wohnung  
-
-#Verstecken
-Du schlüpfst schnell in den Wandschrank und hältst den Atem an.  
-Die Zombies kratzen weiter an der Tür – dann... Stille.  
-
-Doch dann hörst du ein Geräusch.  
-Ein leises Keuchen... direkt neben dir.  
-
-1. Langsam umdrehen. -> Schatten  
-2. Herausrennen. -> Flucht  
-
-#Schatten
-Ein Mann liegt verletzt im Schrank.  
-Sein Arm ist zerfleischt – er sieht dich an.  
-
-1. Ihm helfen. -> Risiko  
-2. Ihn ignorieren und weiter im Schrank bleiben. -> Wahnsinn  
-
-#Risiko
-Du versuchst, ihn zu verarzten.  
-Doch es ist zu spät – er verwandelt sich direkt vor deinen Augen.  
-
-💀 **DU BIST TOT.** 💀  
-**ENDE**  
-
-#Wahnsinn
-Du bleibst im Schrank. Stunden, Tage vergehen.  
-Dein Verstand beginnt zu bröckeln.  
-
-💀 **DU VERHUNGERST IM WANDSCHRANK.** 💀  
-**ENDE**  
-
-#Tankstelle
-Du findest Vorräte, doch eine Kreatur lauert in der Dunkelheit...  
-
-1. Verstecken. -> Schattenkampf  
-2. Kämpfen. -> Tod  
-
-#Schattenkampf
-Die Kreatur verschwindet in der Nacht.  
-Du hast Essen, Wasser, Waffen – eine Chance.  
-
-1. In den Wald fliehen. -> Zuflucht  
-2. Einen sicheren Ort suchen. -> Bunker  
-
-#Zuflucht
-Nach stundenlanger Flucht findest du eine verborgene Höhle.  
-Vielleicht kannst du hier bleiben – und überleben.  
-
-**🎉 Überlebens-Ending: DU HAST ÜBERLEBT!**  
-**ENDE**  
-
-#Bunker
-Ein alter Militärbunker.  
-Du findest Waffen, Nahrung, Schutz.  
-Vielleicht hast du eine Zukunft.  
-
-**🎉 Bestes Überlebens-Ending: DU HAST DEN PERFEKTEN UNTERSCHLUPF GEFUNDEN!**  
-**ENDE**  
+#Warten  
+Die Zombies durchsuchen das Haus und kommen dem Schrank gefährlich nahe. Einer reißt die Tür auf – du hast keine Chance.  
+**GAME OVER**
