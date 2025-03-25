@@ -1,56 +1,132 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout, QTextBrowser, QPushButton
+from PyQt6.QtWidgets import (
+    QApplication, QWidget, QVBoxLayout, QHBoxLayout, QTextBrowser, QPushButton,
+    QSlider, QDialog, QLabel, QRadioButton, QButtonGroup
+)
 from PyQt6.QtGui import QPixmap, QPalette, QBrush, QFont
-from PyQt6.QtCore import Qt, QTimer
+from PyQt6.QtCore import Qt, QTimer, QUrl
+from PyQt6.QtMultimedia import QMediaPlayer, QAudioOutput
 
-# Datei mit der Story laden
 STORY_FILE = "story.txt"
+MUSIC_FILE = "assets/Tanz der Ruinen.mp3"
 
 class RPGGame(QWidget):
     def __init__(self):
         super().__init__()
 
-        # Fenster-Einstellungen
         self.setWindowTitle("Apokalyptisches RPG")
         self.setGeometry(200, 200, 800, 600)
 
-        # Layout für die UI
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)
 
-        # Hintergrund mit altem Papier-Design setzen
         self.set_background("assets/old_paper_bg.png")
 
-        # Story-Textbox mit besserer Lesbarkeit
+        # Textgeschwindigkeit in ms pro Zeichen (Standard: normal)
+        self.text_speed = 30
+
+        # Story Text
         self.story_text = QTextBrowser(self)
-        self.story_text.setFont(QFont("Times New Roman", 16, QFont.Weight.Bold))  # Größere, fettere Schrift
+        self.story_text.setFont(QFont("Times New Roman", 16, QFont.Weight.Bold))
         self.story_text.setStyleSheet("""
-            background: rgba(255, 255, 255, 0.5);  /* Leicht transparenter Hintergrund */
+            background: rgba(255, 255, 255, 0.5);
             border: 2px solid #8b5a2b;
-            color: #3D1C00;  /* Dunkelbraun für besseren Kontrast */
+            color: #3D1C00;
+            padding: 15px;
+            border-radius: 10px;
+        """)
+        self.layout.addWidget(self.story_text)
+import sys
+from PyQt6.QtWidgets import (
+    QApplication, QWidget, QVBoxLayout, QHBoxLayout, QTextBrowser, QPushButton,
+    QSlider, QDialog, QLabel, QRadioButton, QButtonGroup
+)
+from PyQt6.QtGui import QPixmap, QPalette, QBrush, QFont
+from PyQt6.QtCore import Qt, QTimer, QUrl
+from PyQt6.QtMultimedia import QMediaPlayer, QAudioOutput
+
+STORY_FILE = "story.txt"
+MUSIC_FILE = "assets/Tanz der Ruinen.mp3"
+CLICK_SOUND_FILE = "assets/mouse-click.mp3"
+BACKGROUND_IMAGE = "assets/paper_bg.png"
+
+class RPGGame(QWidget):
+    def __init__(self):
+        super().__init__()
+
+        self.setWindowTitle("Apokalyptisches RPG")
+        self.setGeometry(200, 200, 800, 600)
+
+        self.layout = QVBoxLayout()
+        self.setLayout(self.layout)
+
+        self.set_background(BACKGROUND_IMAGE)
+
+        self.text_speed = 30
+
+        self.story_text = QTextBrowser(self)
+        self.story_text.setFont(QFont("Times New Roman", 16, QFont.Weight.Bold))
+        self.story_text.setStyleSheet("""
+            background: rgba(255, 255, 255, 0.5);
+            border: 2px solid #8b5a2b;
+            color: #3D1C00;
             padding: 15px;
             border-radius: 10px;
         """)
         self.layout.addWidget(self.story_text)
 
-        # Container für Buttons
+        # Top-Bar mit Einstellungsbutton
+        top_bar = QHBoxLayout()
+        top_bar.addStretch()
+        settings_btn = QPushButton("⚙ Einstellungen")
+        settings_btn.clicked.connect(self.open_settings)
+        settings_btn.setStyleSheet("""
+            QPushButton {
+                background-color: #c7a17a;
+                border: 2px solid #5c3b1e;
+                border-radius: 8px;
+                padding: 8px 12px;
+                color: black;
+                font-weight: bold;
+            }
+            QPushButton:hover {
+                background-color: #b18c6e;
+            }
+        """)
+        top_bar.addWidget(settings_btn)
+        self.layout.addLayout(top_bar)
+
+        # Audio (Musik)
+        self.audio_output = QAudioOutput()
+        self.audio_output.setVolume(0.0)
+        self.music_player = QMediaPlayer()
+        self.music_player.setAudioOutput(self.audio_output)
+        self.music_player.setSource(QUrl.fromLocalFile(MUSIC_FILE))
+        self.music_player.setLoops(QMediaPlayer.Loops.Infinite)
+        self.music_player.play()
+        self.fade_in_volume(0, 0.5, 2000)
+
+        # Audio (Mausklick)
+        self.click_output = QAudioOutput()
+        self.click_player = QMediaPlayer()
+        self.click_player.setAudioOutput(self.click_output)
+        self.click_player.setSource(QUrl.fromLocalFile(CLICK_SOUND_FILE))
+
+        # Story-Buttons
         self.button_container = QVBoxLayout()
         self.layout.addLayout(self.button_container)
 
-        # Story starten
         self.story_data = self.load_story(STORY_FILE)
         self.current_section = "Start"
         self.display_story()
 
     def set_background(self, image_path):
-        """Setzt das Hintergrundbild für die gesamte UI"""
         palette = QPalette()
         pixmap = QPixmap(image_path)
         palette.setBrush(QPalette.ColorRole.Window, QBrush(pixmap))
         self.setPalette(palette)
 
     def load_story(self, filename):
-        """Lädt die Story aus einer Datei und speichert sie als Dictionary"""
         story = {}
         with open(filename, "r", encoding="utf-8") as file:
             lines = file.readlines()
@@ -58,11 +134,11 @@ class RPGGame(QWidget):
         current_section = None
         for line in lines:
             line = line.strip()
-            if line.startswith("#"):  # Abschnittstitel
+            if line.startswith("#"):
                 current_section = line[1:]
                 story[current_section] = {"text": "", "choices": []}
             elif line and current_section:
-                if "->" in line:  # Entscheidung
+                if "->" in line:
                     choice_text, next_section = map(str.strip, line.split("->"))
                     story[current_section]["choices"].append((choice_text, next_section))
                 else:
@@ -71,51 +147,130 @@ class RPGGame(QWidget):
         return story
 
     def display_story(self):
-        """Sanfte Überblendung & Anzeige des Story-Abschnitts"""
-        section = self.story_data.get(self.current_section, {"text": "Fehler: Abschnitt nicht gefunden", "choices": []})
-        
-        # Sanfte Überblendung (Text ausblenden, dann wieder einblenden)
-        self.story_text.setStyleSheet("opacity: 0;")  
-        QTimer.singleShot(200, lambda: self.story_text.setText(section["text"]))
-        QTimer.singleShot(300, lambda: self.story_text.setStyleSheet("""
-            background: rgba(255, 255, 255, 0.5);
-            border: 2px solid #8b5a2b;
-            color: #3D1C00;
-            padding: 15px;
-            border-radius: 10px;
-            opacity: 1;
-        """))
+        section = self.story_data.get(self.current_section, {"text": "Fehler", "choices": []})
+        full_text = section["text"]
+        self.animate_text(full_text)
 
-        # Alte Buttons entfernen
         for i in reversed(range(self.button_container.count())):
             self.button_container.itemAt(i).widget().deleteLater()
 
-        # Neue Buttons generieren
         for choice_text, next_section in section["choices"]:
             btn = QPushButton(choice_text)
-            btn.setFont(QFont("Times New Roman", 14, QFont.Weight.Bold))  # Größere Schrift für bessere Lesbarkeit
+            btn.setFont(QFont("Times New Roman", 14, QFont.Weight.Bold))
             btn.setStyleSheet("""
                 QPushButton {
-                    background-color: #d2a679; /* Helleres Braun für bessere Sichtbarkeit */
+                    background-color: #d2a679;
                     border: 3px solid #8b5a2b;
                     color: black;
                     padding: 12px;
-                    border-radius: 5px;
+                    border-radius: 10px;
                     margin-bottom: 5px;
                 }
                 QPushButton:hover {
-                    background-color: #b8875b; /* Kräftigeres Braun für Hover */
+                    background-color: #b8875b;
                     border: 3px solid #654321;
-                    padding: 14px; /* Simuliert ein leichtes „Wachsen“ */
+                    padding: 14px;
                 }
             """)
-            btn.clicked.connect(lambda _, s=next_section: self.update_story(s))
+            btn.clicked.connect(lambda _, s=next_section: self.handle_button_click(s))
             self.button_container.addWidget(btn)
 
+    def handle_button_click(self, next_section):
+        self.play_click_sound()
+        self.update_story(next_section)
+
+    def play_click_sound(self):
+        self.click_player.stop()
+        self.click_player.play()
+
     def update_story(self, next_section):
-        """Wechselt zum nächsten Story-Abschnitt mit sanftem Übergang"""
         self.current_section = next_section
         self.display_story()
+
+    def animate_text(self, text):
+        self.story_text.clear()
+        self.displayed_text = ""
+        self.text_index = 0
+        self.full_text = text
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.update_text_animation)
+        self.timer.start(self.text_speed)
+
+    def update_text_animation(self):
+        if self.text_index < len(self.full_text):
+            self.displayed_text += self.full_text[self.text_index]
+            self.story_text.setPlainText(self.displayed_text)
+            self.text_index += 1
+        else:
+            self.timer.stop()
+
+    def fade_in_volume(self, start, end, duration_ms):
+        steps = 20
+        interval = duration_ms // steps
+        delta = (end - start) / steps
+        self.current_volume = start
+
+        def increase():
+            self.current_volume += delta
+            self.audio_output.setVolume(min(self.current_volume, end))
+
+        for i in range(1, steps + 1):
+            QTimer.singleShot(i * interval, increase)
+
+    def open_settings(self):
+        dlg = QDialog(self)
+        dlg.setWindowTitle("Einstellungen")
+        dlg.setFixedSize(300, 250)
+        layout = QVBoxLayout()
+
+        layout.addWidget(QLabel("🎵 Musiklautstärke"))
+        volume_slider = QSlider(Qt.Orientation.Horizontal)
+        volume_slider.setRange(0, 100)
+        volume_slider.setValue(int(self.audio_output.volume() * 100))
+        volume_slider.valueChanged.connect(lambda val: self.audio_output.setVolume(val / 100))
+        layout.addWidget(volume_slider)
+
+        mute_btn = QPushButton("🔇 Mute / Unmute")
+        def toggle_mute():
+            if self.audio_output.volume() > 0:
+                self.last_volume = self.audio_output.volume()
+                self.audio_output.setVolume(0)
+            else:
+                self.audio_output.setVolume(self.last_volume)
+        mute_btn.clicked.connect(toggle_mute)
+        layout.addWidget(mute_btn)
+
+        layout.addWidget(QLabel("⌛ Textgeschwindigkeit"))
+        speed_group = QButtonGroup(dlg)
+        slow = QRadioButton("🐢 Langsam")
+        normal = QRadioButton("🚶 Normal")
+        fast = QRadioButton("🐇 Schnell")
+        layout.addWidget(slow)
+        layout.addWidget(normal)
+        layout.addWidget(fast)
+
+        speed_group.addButton(slow)
+        speed_group.addButton(normal)
+        speed_group.addButton(fast)
+
+        if self.text_speed <= 10:
+            fast.setChecked(True)
+        elif self.text_speed >= 50:
+            slow.setChecked(True)
+        else:
+            normal.setChecked(True)
+
+        def update_speed():
+            if slow.isChecked():
+                self.text_speed = 60
+            elif normal.isChecked():
+                self.text_speed = 30
+            elif fast.isChecked():
+                self.text_speed = 10
+        speed_group.buttonClicked.connect(update_speed)
+
+        dlg.setLayout(layout)
+        dlg.exec()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
